@@ -3,164 +3,359 @@ import sys
 import os
 
 st.set_page_config(
-    page_title="FYND AI Internship",
+    page_title="FYND AI Internship Assessment",
     page_icon="🚀",
     layout="wide"
 )
 
-st.sidebar.title("🚀 FYND AI Project")
+st.sidebar.title("FYND AI Assessment")
 st.sidebar.markdown("---")
 
 page = st.sidebar.radio(
-    "Select Page",
-    ["Rating Prediction", "User Dashboard", "Admin Dashboard"]
+    "Navigation",
+    ["Task 1: Rating Prediction", "Task 2: User Dashboard", "Task 2: Admin Dashboard"]
 )
 
 st.sidebar.markdown("---")
-st.sidebar.info("Built for FYND AI Internship Assessment")
+st.sidebar.info("Navneet Shukla | FYND AI Internship")
 
-if page == "Rating Prediction":
-    st.title("Task 1: Yelp Rating Prediction")
-    st.markdown("### Analyze Yelp reviews and predict star ratings")
-    
-    st.info("⚠️ Task 1 performs well with **TinyLlama 1.1B**")
+if page == "Task 1: Rating Prediction":
+    st.title("Task 1: Yelp Rating Prediction via Prompting")
     
     st.markdown("""
-    **What this does:**
-    - Tests 3 different prompting approaches
-    - Predicts 1-5 star ratings from reviews
-    - Compares accuracy, MAE, and JSON validity
+    ### Objective
+    Design and evaluate multiple prompting approaches to classify Yelp reviews into 1-5 star ratings, 
+    returning structured JSON responses with explanations.
     """)
     
-    with st.expander("📖 View Previous Results - TinyLlama 1.1B"):
-         st.markdown("""
-### **📌 Yelp Rating Prediction – TinyLlama 1.1B (200 Sample Reviews)**
-
----
-
-## **🔹 Approach 1 — Basic Prompt**
-- **Accuracy:** **29%**
-- **MAE:** *1.09*  
-- **Valid JSON:** **88.5%**
-- **Failures:** *(If you tracked failures, add here — otherwise remove line)*  
-- **Behavior:**  
-  - Most stable and consistent  
-  - Minimal hallucinations  
-  - Highest JSON validity
-
----
-
-## **🔹 Approach 2 — Keyword-Guided Prompt**
-- **Accuracy:** *(Add value if measured)*  
-- **MAE:** *1.10*  
-- **Valid JSON:** *(Add if measured)*  
-- **Behavior:**  
-  - Better alignment with sentiment-specific keywords  
-  - Stronger positive/negative polarity detection  
-  - Sometimes overweights keyword cues
-
----
-
-## **🔹 Approach 3 — Examples + Chain-of-Thought**
-- **Accuracy:** *(Add value if measured)*  
-- **MAE:** *1.35*  
-- **Valid JSON:** *(Add if measured)*  
-- **Behavior:**  
-  - Best performance on longer, multi-sentence reviews  
-  - Produces coherent reasoning  
-  - Slight example-induced bias
-
----
-
-## **📊 Overall Comparison**
-
-| Approach | Accuracy | JSON Valid | Notes |
-|---------|----------|------------|-------|
-| **Basic** | 29% | 88.5% | Most reliable, best formatting |
-| **Keywords** | — | — | Strong sentiment mapping |
-| **Examples + CoT** | — | — | Best for complex reasoning |
-
-**➡️ Best Approach:** **Approach 1 — Basic Prompt**
-
----
-
-## **📝 Key Findings**
-
-- TinyLlama 1.1B performed **surprisingly well given its small size**, especially in JSON formatting.  
-- Approach 1 produced:
-  - ✅ **Highest accuracy**
-  - ✅ **Highest JSON validity**
-  - ⚠️ Least expressive reasoning  
-- Approach 2 improved emotional alignment but did not outperform Basic.  
-- Approach 3 gave the best reasoning quality but slightly less accuracy.  
-- Small models benefit heavily from **shorter prompts + clearer structure**.
-""")
-
+    st.markdown("---")
     
-    with st.expander("📖 View Previous Results - Llama 3 8B"):
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        st.markdown("### Dataset Information")
         st.markdown("""
-### **📌 Yelp Rating Prediction – Llama 3 8B (200 Sample Reviews)**
+        - **Source:** Yelp Reviews (Kaggle)
+        - **Sample Size:** 200 reviews
+        - **Evaluation Metrics:** Accuracy, MAE, JSON Validity Rate
+        """)
+    
+    with col2:
+        st.markdown("### Model Details")
+        st.markdown("""
+        - **Model:** TinyLlama 1.1B
+        - **Deployment:** Local inference
+        - **Device:** MPS (Apple Silicon)
+        """)
+    
+    st.markdown("---")
+    
+    st.markdown("## Prompting Approaches")
+    
+    with st.expander("Approach 1: Basic Direct Prompt", expanded=True):
+        st.markdown("""
+        #### Simple, minimal prompt asking directly for star rating. Tests baseline model capability without additional guidance or context.
+        """)
+        
+        st.code("""
+Analyze this Yelp review and predict the star rating (1-5).
+Return your response in JSON format:
+{
+  "predicted_stars": <number>,
+  "explanation": "<brief reasoning>"
+}
 
----
+Review: [REVIEW_TEXT]
+        """, language="text")
+        
+        st.markdown("### Results")
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Accuracy", "31.0%")
+        col2.metric("MAE", "1.09")
+        col3.metric("JSON Validity", "91.0%")
+        
+        st.markdown("### Prediction Distribution")
+        st.markdown("""
+        - 3★: 20 (10.0%)
+        - 4★: 114 (57.0%)
+        - 5★: 66 (33.0%)
+        - Never predicted: 1★, 2★
+        """)
+        
+        st.markdown("### Key Observations")
+        st.markdown("""
+        - Highest accuracy among all approaches
+        - Strong positive bias (71% predicted 4-5 stars)
+        - Excellent JSON formatting compliance
+        - Fails to capture negative sentiment (never predicted 1-2 stars)
+        """)
+    
+    with st.expander("Approach 2: Keyword-Guided Prompt"):
+        st.markdown("""
+        #### Enhanced prompt with explicit sentiment keywords mapped to rating levels. Provides clearer signals for classification by associating specific words with star ratings.
+        """)
+        
+        st.code("""
+Analyze this Yelp review and predict the star rating (1-5).
 
-## **🔹 Approach 1 — Basic Prompt**
-- **Accuracy:** **16.5%**
-- **MAE:** **1.19**
-- **Valid JSON:** **0.0%**
-- **Failures:** **200 / 200**
-- **Prediction Pattern:**  
-  - Predicted **3★ for all 200 reviews (100%)**
-  - ⚠️ Never predicted: **1★, 2★, 4★, 5★**
+Rating Guide:
+- 1 star: terrible, awful, horrible, worst
+- 2 stars: bad, poor, disappointing, mediocre
+- 3 stars: okay, decent, average, fine
+- 4 stars: good, nice, pleasant, solid
+- 5 stars: excellent, amazing, outstanding, perfect
 
----
+Return JSON:
+{
+  "predicted_stars": <number>,
+  "explanation": "<brief reasoning>"
+}
 
-## **🔹 Approach 2 — Keyword-Guided Prompt**
-- **Accuracy:** **16.5%**
-- **MAE:** **1.19**
-- **Valid JSON:** **0.0%**
-- **Failures:** **200 / 200**
-- **Prediction Pattern:**  
-  - Predicted **3★ for all 200 reviews (100%)**
-  - ⚠️ Never predicted: **1★, 2★, 4★, 5★**
+Review: [REVIEW_TEXT]
+        """, language="text")
+        
+        st.markdown("### Results")
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Accuracy", "28.0%")
+        col2.metric("MAE", "1.10")
+        col3.metric("JSON Validity", "44.5%")
+        
+        st.markdown("### Prediction Distribution")
+        st.markdown("""
+        - 1★: 1 (0.5%)
+        - 3★: 111 (55.5%)
+        - 4★: 54 (27.0%)
+        - 5★: 34 (17.0%)
+        - Never predicted: 2★
+        """)
+        
+        st.markdown("### Key Observations")
+        st.markdown("""
+        - Slight decrease in accuracy compared to basic approach
+        - Strong neutral bias (55.5% predicted 3 stars)
+        - Significant drop in JSON validity (44.5%)
+        - Additional context may have confused the small model
+        """)
+    
+    with st.expander("Approach 3: Examples + Chain-of-Thought"):
+        st.markdown("""
+        #### Few-shot learning with example reviews and explicit reasoning steps. Guides model through analysis process to improve complex sentiment understanding.
+        """)
+        
+        st.code("""
+Analyze Yelp reviews and predict star ratings (1-5).
 
----
+Examples:
+Review: "Food was cold and service terrible"
+Reasoning: Negative words indicate poor experience
+Rating: 1 star
 
-## **🔹 Approach 3 — Examples + Chain-of-Thought**
-- **Accuracy:** **16.5%**
-- **MAE:** **1.19**
-- **Valid JSON:** **0.0%**
-- **Failures:** **200 / 200**
-- **Prediction Pattern:**  
-  - Predicted **3★ for all 200 reviews (100%)**
-  - ⚠️ Never predicted: **1★, 2★, 4★, 5★**
+Review: "Great food, friendly staff, will return"
+Reasoning: Positive sentiment throughout
+Rating: 5 stars
 
----
+Now analyze this review step by step:
+1. Identify key sentiment words
+2. Assess overall tone
+3. Assign rating
 
-## **📊 Overall Comparison**
+Return JSON:
+{
+  "predicted_stars": <number>,
+  "explanation": "<brief reasoning>"
+}
 
-| Approach | Accuracy | MAE | JSON Valid |
-|---------|----------|------|------------|
-| **Basic** | 16.5% | 1.19 | 0.0% |
-| **Keywords** | 16.5% | 1.19 | 0.0% |
-| **Examples + CoT** | 16.5% | 1.19 | 0.0% |
+Review: [REVIEW_TEXT]
+        """, language="text")
+        
+        st.markdown("### Results")
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Accuracy", "25.5%")
+        col2.metric("MAE", "1.35")
+        col3.metric("JSON Validity", "97.0%")
+        
+        st.markdown("### Prediction Distribution")
+        st.markdown("""
+        - 3★: 7 (3.5%)
+        - 4★: 2 (1.0%)
+        - 5★: 191 (95.5%)
+        - Never predicted: 1★, 2★
+        """)
+        
+        st.markdown("### Key Observations")
+        st.markdown("""
+        - Lowest accuracy but highest JSON validity
+        - Extreme positive bias (95.5% predicted 5 stars)
+        - Few-shot examples may have anchored model to positive sentiment
+        - Best format compliance but worst predictive performance
+        """)
+    
+    st.markdown("---")
+    
+    st.markdown("## Comparative Analysis")
+    
+    comparison_data = {
+        "Approach": ["Basic Direct", "Keyword-Guided", "Examples + CoT"],
+        "Accuracy": ["31.0%", "28.0%", "25.5%"],
+        "MAE": ["1.09", "1.10", "1.35"],
+        "JSON Validity": ["91.0%", "44.5%", "97.0%"],
+        "Primary Bias": ["Positive (4★)", "Neutral (3★)", "Extreme Positive (5★)"]
+    }
+    
+    st.table(comparison_data)
+    
+    st.markdown("---")
+    
+    st.markdown("## Key Findings & Discussion")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("### Best Performing Approach")
+        st.success("**Approach 1: Basic Direct Prompt**")
+        st.markdown("""
+        **Reasons for Success:**
+        - Simplicity works best for small models (1.1B parameters)
+        - Clear, direct instructions without confusion
+        - Optimal balance between accuracy and JSON compliance
+        - Less prompt complexity = more consistent outputs
+        """)
+    
+    with col2:
+        st.markdown("### Common Challenges")
+        st.markdown("""
+        **All approaches struggled with:**
+        - Negative sentiment detection (rarely predicted 1-2 stars)
+        - Model size limitations affecting reasoning depth
+        - Inherent positive bias in predictions
+        - Difficulty maintaining JSON structure with complex prompts
+        """)
+    
+    st.markdown("### Why More Complex Prompts Underperformed")
+    st.markdown("""
+    1. **Keyword-Guided Approach:** Additional keywords introduced noise for the small model, 
+       causing it to default to middle ratings (3 stars) when uncertain.
+    
+    2. **Chain-of-Thought Approach:** Few-shot examples anchored the model toward extreme 
+       predictions, particularly 5-star ratings, reducing prediction diversity.
+    
+    3. **Model Capacity:** TinyLlama 1.1B has limited reasoning capacity. More complex 
+       instructions exceeded its ability to follow multi-step logic consistently.
+    """)
+    
+    st.markdown("---")
+    
+    st.markdown("## Recommendations")
+    
+    st.markdown("""
+    ### For Improved Performance:
+    
+    1. **Model Selection:**
+       - Use larger models (7B+ parameters) for better reasoning
+       - Consider fine-tuned sentiment analysis models
+       - Test instruction-tuned variants for better prompt following
+    
+    2. **Prompt Engineering:**
+       - Keep prompts simple for small models
+       - Use balanced examples (both positive and negative)
+       - Include explicit instructions for edge cases
+       - Add format validation in prompt
+    
+    3. **Post-Processing:**
+       - Implement ensemble voting across approaches
+       - Add calibration layer for bias correction
+       - Use confidence thresholds for uncertain predictions
+    
+    4. **Data Strategy:**
+       - Ensure balanced representation of all rating levels
+       - Include challenging edge cases in evaluation
+       - Use stratified sampling for fair assessment
+    """)
+    
+    st.markdown("---")
+    
+    with st.expander("View Complete Test Results"):
+        st.code("""
+YELP RATING PREDICTION - LOCAL MODEL (TinyLlama 1.1B)
+Sample Size: 200 reviews
+Device: MPS (Apple Silicon)
 
-**➡️ Best Approach:** **Approach 1 — Basic**
+============================================================
+APPROACH 1: BASIC DIRECT PROMPT
+============================================================
+Accuracy: 31.0%
+MAE: 1.09
+Valid JSON: 91.0%
+Failed: 18
 
----
+Predictions:
+  3★: 20 (10.0%)
+  4★: 114 (57.0%)
+  5★: 66 (33.0%)
 
-## **📝 Key Findings**
+Actual Distribution:
+  1★: 18 (9.0%)
+  2★: 17 (8.5%)
+  3★: 33 (16.5%)
+  4★: 79 (39.5%)
+  5★: 53 (26.5%)
 
-- Llama 3 8B produced **only 3-star predictions**, showing:
-  - ⚠️ **Strong neutral bias**
-  - ⚠️ **Zero JSON compliance**
-  - ⚠️ **No improvement across prompt variants**
-- MAE remained stable at **1.19** for all approaches.
-- More advanced prompting **did not** improve performance.
-- Basic direct prompt worked **best**, but still with low accuracy.
-""")
+============================================================
+APPROACH 2: KEYWORD-GUIDED PROMPT
+============================================================
+Accuracy: 28.0%
+MAE: 1.10
+Valid JSON: 44.5%
+Failed: 111
 
+Predictions:
+  1★: 1 (0.5%)
+  3★: 111 (55.5%)
+  4★: 54 (27.0%)
+  5★: 34 (17.0%)
 
-elif page == "User Dashboard":
+Actual Distribution:
+  1★: 18 (9.0%)
+  2★: 17 (8.5%)
+  3★: 33 (16.5%)
+  4★: 79 (39.5%)
+  5★: 53 (26.5%)
+
+============================================================
+APPROACH 3: EXAMPLES + CHAIN-OF-THOUGHT
+============================================================
+Accuracy: 25.5%
+MAE: 1.35
+Valid JSON: 97.0%
+Failed: 6
+
+Predictions:
+  3★: 7 (3.5%)
+  4★: 2 (1.0%)
+  5★: 191 (95.5%)
+
+Actual Distribution:
+  1★: 18 (9.0%)
+  2★: 17 (8.5%)
+  3★: 33 (16.5%)
+  4★: 79 (39.5%)
+  5★: 53 (26.5%)
+
+============================================================
+SUMMARY
+============================================================
+Best Overall: Approach 1 (Basic Direct Prompt)
+  - Highest Accuracy: 31.0%
+  - Lowest MAE: 1.09
+  - Strong JSON Validity: 91.0%
+
+Average Performance:
+  - Accuracy: 28.2%
+  - MAE: 1.18
+  - JSON Validity: 77.5%
+        """, language="text")
+
+elif page == "Task 2: User Dashboard":
     import importlib.util
     
     user_path = os.path.join(os.path.dirname(__file__), 'task2', 'user_dashboard.py')
@@ -173,7 +368,7 @@ elif page == "User Dashboard":
     else:
         st.error("user_dashboard.py not found in task2 folder")
 
-elif page == "Admin Dashboard":
+elif page == "Task 2: Admin Dashboard":
     import importlib.util
     
     admin_path = os.path.join(os.path.dirname(__file__), 'task2', 'admin_dashboard.py')
@@ -185,4 +380,3 @@ elif page == "Admin Dashboard":
         admin_module.main()
     else:
         st.error("admin_dashboard.py not found in task2 folder")
-
