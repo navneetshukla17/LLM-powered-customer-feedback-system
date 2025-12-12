@@ -121,19 +121,6 @@ This intelligent feedback management platform revolutionizes customer service by
 ```
 
 ---
-
-## 📸 Demo Screenshots
-
-### Customer Dashboard
-![Customer Dashboard](https://via.placeholder.com/800x400/667eea/ffffff?text=Customer+Dashboard)
-*Beautiful gradient interface with instant AI responses*
-
-### Admin Analytics
-![Admin Dashboard](https://via.placeholder.com/800x400/667eea/ffffff?text=Admin+Analytics+Dashboard)
-*Comprehensive analytics with visual insights*
-
----
-
 ## 🚀 Installation
 
 ### Prerequisites
